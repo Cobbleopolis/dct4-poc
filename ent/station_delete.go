@@ -8,6 +8,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/cobbleopolis/dragoncontimer/ent/internal"
 	"github.com/cobbleopolis/dragoncontimer/ent/predicate"
 	"github.com/cobbleopolis/dragoncontimer/ent/station"
 )
@@ -41,6 +42,8 @@ func (_d *StationDelete) ExecX(ctx context.Context) int {
 
 func (_d *StationDelete) sqlExec(ctx context.Context) (int, error) {
 	_spec := sqlgraph.NewDeleteSpec(station.Table, sqlgraph.NewFieldSpec(station.FieldID, field.TypeUUID))
+	_spec.Node.Schema = _d.schemaConfig.Station
+	ctx = internal.NewSchemaConfigContext(ctx, _d.schemaConfig)
 	if ps := _d.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {

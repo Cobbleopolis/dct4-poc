@@ -33,6 +33,14 @@ func (_c *StationCreate) SetStatus(v station.Status) *StationCreate {
 	return _c
 }
 
+// SetNillableStatus sets the "status" field if the given value is not nil.
+func (_c *StationCreate) SetNillableStatus(v *station.Status) *StationCreate {
+	if v != nil {
+		_c.SetStatus(*v)
+	}
+	return _c
+}
+
 // SetCheckoutTime sets the "checkoutTime" field.
 func (_c *StationCreate) SetCheckoutTime(v time.Time) *StationCreate {
 	_c.mutation.SetCheckoutTime(v)
@@ -110,6 +118,10 @@ func (_c *StationCreate) ExecX(ctx context.Context) {
 
 // defaults sets the default values of the builder before save.
 func (_c *StationCreate) defaults() {
+	if _, ok := _c.mutation.Status(); !ok {
+		v := station.DefaultStatus
+		_c.mutation.SetStatus(v)
+	}
 	if _, ok := _c.mutation.ID(); !ok {
 		v := station.DefaultID()
 		_c.mutation.SetID(v)
@@ -160,6 +172,7 @@ func (_c *StationCreate) createSpec() (*Station, *sqlgraph.CreateSpec) {
 		_node = &Station{config: _c.config}
 		_spec = sqlgraph.NewCreateSpec(station.Table, sqlgraph.NewFieldSpec(station.FieldID, field.TypeUUID))
 	)
+	_spec.Schema = _c.schemaConfig.Station
 	if id, ok := _c.mutation.ID(); ok {
 		_node.ID = id
 		_spec.ID.Value = &id

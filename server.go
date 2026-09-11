@@ -24,7 +24,11 @@ func main() {
 
 	fmt.Printf("Connection String: %s\n", connStr)
 
-	client, err := ent.Open("postgres", connStr)
+	sc := ent.SchemaConfig{
+		Station: "dct",
+	}
+
+	client, err := ent.Open("postgres", connStr, ent.AlternateSchema(sc))
 	if err != nil {
 		log.Fatalf("Error connecting to the postgres: %v", err)
 	}

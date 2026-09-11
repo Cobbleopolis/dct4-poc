@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/cobbleopolis/dragoncontimer/ent/internal"
 	"github.com/cobbleopolis/dragoncontimer/ent/predicate"
 	"github.com/cobbleopolis/dragoncontimer/ent/station"
 )
@@ -168,6 +169,8 @@ func (_u *StationUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if _u.mutation.CurrentPlayerCleared() {
 		_spec.ClearField(station.FieldCurrentPlayer, field.TypeString)
 	}
+	_spec.Node.Schema = _u.schemaConfig.Station
+	ctx = internal.NewSchemaConfigContext(ctx, _u.schemaConfig)
 	if _node, err = sqlgraph.UpdateNodes(ctx, _u.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{station.Label}
@@ -358,6 +361,8 @@ func (_u *StationUpdateOne) sqlSave(ctx context.Context) (_node *Station, err er
 	if _u.mutation.CurrentPlayerCleared() {
 		_spec.ClearField(station.FieldCurrentPlayer, field.TypeString)
 	}
+	_spec.Node.Schema = _u.schemaConfig.Station
+	ctx = internal.NewSchemaConfigContext(ctx, _u.schemaConfig)
 	_node = &Station{config: _u.config}
 	_spec.Assign = _node.assignValues
 	_spec.ScanValues = _node.scanValues

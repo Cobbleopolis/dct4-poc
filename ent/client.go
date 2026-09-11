@@ -16,6 +16,8 @@ import (
 	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
 	"github.com/cobbleopolis/dragoncontimer/ent/station"
+
+	"github.com/cobbleopolis/dragoncontimer/ent/internal"
 )
 
 // Client is the client that holds all ent builders.
@@ -52,6 +54,8 @@ type (
 		hooks *hooks
 		// interceptors to execute on queries.
 		inters *inters
+		// schemaConfig contains alternative names for all tables.
+		schemaConfig SchemaConfig
 	}
 	// Option function to configure the client.
 	Option func(*config)
@@ -339,3 +343,15 @@ type (
 		Station []ent.Interceptor
 	}
 )
+
+// SchemaConfig represents alternative schema names for all tables
+// that can be passed at runtime.
+type SchemaConfig = internal.SchemaConfig
+
+// AlternateSchemas allows alternate schema names to be
+// passed into ent operations.
+func AlternateSchema(schemaConfig SchemaConfig) Option {
+	return func(c *config) {
+		c.schemaConfig = schemaConfig
+	}
+}

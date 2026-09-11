@@ -19,7 +19,8 @@ func (Station) Fields() []ent.Field {
 			Unique(),
 		field.String("name"),
 		field.Enum("status").
-			Values("DEFAULT", "CHECKED_OUT", "NOT_AVAILABLE"),
+			Values("DEFAULT", "CHECKED_OUT", "NOT_AVAILABLE").
+			Default("DEFAULT"),
 		field.Time("checkoutTime").
 			Optional().
 			Nillable(),

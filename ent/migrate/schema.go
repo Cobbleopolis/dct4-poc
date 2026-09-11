@@ -12,7 +12,7 @@ var (
 	StationsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUUID, Unique: true},
 		{Name: "name", Type: field.TypeString},
-		{Name: "status", Type: field.TypeEnum, Enums: []string{"DEFAULT", "CHECKED_OUT", "NOT_AVAILABLE"}},
+		{Name: "status", Type: field.TypeEnum, Enums: []string{"DEFAULT", "CHECKED_OUT", "NOT_AVAILABLE"}, Default: "DEFAULT"},
 		{Name: "checkout_time", Type: field.TypeTime, Nullable: true},
 		{Name: "current_player", Type: field.TypeString, Nullable: true},
 	}
