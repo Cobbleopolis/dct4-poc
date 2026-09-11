@@ -1,11 +1,16 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"os"
+	"time"
 
+	"github.com/cobbleopolis/dragoncontimer/ent"
+	"github.com/cobbleopolis/dragoncontimer/ent/station"
 	"github.com/joho/godotenv"
+	_ "github.com/lib/pq"
 )
 
 func main() {
@@ -18,4 +23,27 @@ func main() {
 	connStr := os.Getenv("DB_CONN_STR")
 
 	fmt.Printf("Connection String: %s\n", connStr)
+
+	client, err := ent.Open("postgres", connStr)
+	if err != nil {
+		log.Fatalf("Error connecting to the postgres: %v", err)
+	}
+	defer client.Close()
+
+	ctx := context.Background()
+	if err := client.Schema.Create(ctx); err != nil {
+		log.Fatalf("Failed to create the db schema: %v", err)
+	}
+
+	testStation := client.Station.
+		Create().
+		SetName("Test Station").
+		SaveX(ctx)
+
+	client.Station.
+		UpdateOne(testStation).
+		SetStatus(station.StatusCHECKED_OUT).
+		SetCurrentPlayer("John Doe").
+		SetCheckoutTime(time.Now()).
+		SaveX(ctx)
 }
