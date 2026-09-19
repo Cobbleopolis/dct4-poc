@@ -11,29 +11,29 @@ import (
 	"github.com/cobbleopolis/dragoncontimer/ent/predicate"
 
 	"github.com/cobbleopolis/dragoncontimer/ent/internal"
-	"github.com/cobbleopolis/dragoncontimer/ent/station"
+	"github.com/cobbleopolis/dragoncontimer/ent/project"
 )
 
-// StationDelete is the builder for deleting a Station entity.
-type StationDelete struct {
+// ProjectDelete is the builder for deleting a Project entity.
+type ProjectDelete struct {
 	config
 	hooks    []Hook
-	mutation *StationMutation
+	mutation *ProjectMutation
 }
 
-// Where appends a list predicates to the StationDelete builder.
-func (_d *StationDelete) Where(ps ...predicate.Station) *StationDelete {
+// Where appends a list predicates to the ProjectDelete builder.
+func (_d *ProjectDelete) Where(ps ...predicate.Project) *ProjectDelete {
 	_d.mutation.Where(ps...)
 	return _d
 }
 
 // Exec executes the deletion query and returns how many vertices were deleted.
-func (_d *StationDelete) Exec(ctx context.Context) (int, error) {
+func (_d *ProjectDelete) Exec(ctx context.Context) (int, error) {
 	return withHooks(ctx, _d.sqlExec, _d.mutation, _d.hooks)
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (_d *StationDelete) ExecX(ctx context.Context) int {
+func (_d *ProjectDelete) ExecX(ctx context.Context) int {
 	n, err := _d.Exec(ctx)
 	if err != nil {
 		panic(err)
@@ -41,9 +41,9 @@ func (_d *StationDelete) ExecX(ctx context.Context) int {
 	return n
 }
 
-func (_d *StationDelete) sqlExec(ctx context.Context) (int, error) {
-	_spec := sqlgraph.NewDeleteSpec(station.Table, sqlgraph.NewFieldSpec(station.FieldID, field.TypeUUID))
-	_spec.Node.Schema = _d.schemaConfig.Station
+func (_d *ProjectDelete) sqlExec(ctx context.Context) (int, error) {
+	_spec := sqlgraph.NewDeleteSpec(project.Table, sqlgraph.NewFieldSpec(project.FieldID, field.TypeUUID))
+	_spec.Node.Schema = _d.schemaConfig.Project
 	ctx = internal.NewSchemaConfigContext(ctx, _d.schemaConfig)
 	if ps := _d.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
@@ -60,32 +60,32 @@ func (_d *StationDelete) sqlExec(ctx context.Context) (int, error) {
 	return affected, err
 }
 
-// StationDeleteOne is the builder for deleting a single Station entity.
-type StationDeleteOne struct {
-	_d *StationDelete
+// ProjectDeleteOne is the builder for deleting a single Project entity.
+type ProjectDeleteOne struct {
+	_d *ProjectDelete
 }
 
-// Where appends a list predicates to the StationDelete builder.
-func (_d *StationDeleteOne) Where(ps ...predicate.Station) *StationDeleteOne {
+// Where appends a list predicates to the ProjectDelete builder.
+func (_d *ProjectDeleteOne) Where(ps ...predicate.Project) *ProjectDeleteOne {
 	_d._d.mutation.Where(ps...)
 	return _d
 }
 
 // Exec executes the deletion query.
-func (_d *StationDeleteOne) Exec(ctx context.Context) error {
+func (_d *ProjectDeleteOne) Exec(ctx context.Context) error {
 	n, err := _d._d.Exec(ctx)
 	switch {
 	case err != nil:
 		return err
 	case n == 0:
-		return &NotFoundError{station.Label}
+		return &NotFoundError{project.Label}
 	default:
 		return nil
 	}
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (_d *StationDeleteOne) ExecX(ctx context.Context) {
+func (_d *ProjectDeleteOne) ExecX(ctx context.Context) {
 	if err := _d.Exec(ctx); err != nil {
 		panic(err)
 	}

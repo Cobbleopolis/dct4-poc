@@ -70,6 +70,11 @@ func CurrentPlayer(v string) predicate.Station {
 	return predicate.Station(sql.FieldEQ(FieldCurrentPlayer, v))
 }
 
+// OrderPriority applies equality check predicate on the "orderPriority" field. It's identical to OrderPriorityEQ.
+func OrderPriority(v int) predicate.Station {
+	return predicate.Station(sql.FieldEQ(FieldOrderPriority, v))
+}
+
 // NameEQ applies the EQ predicate on the "name" field.
 func NameEQ(v string) predicate.Station {
 	return predicate.Station(sql.FieldEQ(FieldName, v))
@@ -278,6 +283,46 @@ func CurrentPlayerEqualFold(v string) predicate.Station {
 // CurrentPlayerContainsFold applies the ContainsFold predicate on the "currentPlayer" field.
 func CurrentPlayerContainsFold(v string) predicate.Station {
 	return predicate.Station(sql.FieldContainsFold(FieldCurrentPlayer, v))
+}
+
+// OrderPriorityEQ applies the EQ predicate on the "orderPriority" field.
+func OrderPriorityEQ(v int) predicate.Station {
+	return predicate.Station(sql.FieldEQ(FieldOrderPriority, v))
+}
+
+// OrderPriorityNEQ applies the NEQ predicate on the "orderPriority" field.
+func OrderPriorityNEQ(v int) predicate.Station {
+	return predicate.Station(sql.FieldNEQ(FieldOrderPriority, v))
+}
+
+// OrderPriorityIn applies the In predicate on the "orderPriority" field.
+func OrderPriorityIn(vs ...int) predicate.Station {
+	return predicate.Station(sql.FieldIn(FieldOrderPriority, vs...))
+}
+
+// OrderPriorityNotIn applies the NotIn predicate on the "orderPriority" field.
+func OrderPriorityNotIn(vs ...int) predicate.Station {
+	return predicate.Station(sql.FieldNotIn(FieldOrderPriority, vs...))
+}
+
+// OrderPriorityGT applies the GT predicate on the "orderPriority" field.
+func OrderPriorityGT(v int) predicate.Station {
+	return predicate.Station(sql.FieldGT(FieldOrderPriority, v))
+}
+
+// OrderPriorityGTE applies the GTE predicate on the "orderPriority" field.
+func OrderPriorityGTE(v int) predicate.Station {
+	return predicate.Station(sql.FieldGTE(FieldOrderPriority, v))
+}
+
+// OrderPriorityLT applies the LT predicate on the "orderPriority" field.
+func OrderPriorityLT(v int) predicate.Station {
+	return predicate.Station(sql.FieldLT(FieldOrderPriority, v))
+}
+
+// OrderPriorityLTE applies the LTE predicate on the "orderPriority" field.
+func OrderPriorityLTE(v int) predicate.Station {
+	return predicate.Station(sql.FieldLTE(FieldOrderPriority, v))
 }
 
 // And groups predicates with the AND operator between them.

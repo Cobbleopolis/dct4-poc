@@ -69,6 +69,20 @@ func (_c *StationCreate) SetNillableCurrentPlayer(v *string) *StationCreate {
 	return _c
 }
 
+// SetOrderPriority sets the "orderPriority" field.
+func (_c *StationCreate) SetOrderPriority(v int) *StationCreate {
+	_c.mutation.SetOrderPriority(v)
+	return _c
+}
+
+// SetNillableOrderPriority sets the "orderPriority" field if the given value is not nil.
+func (_c *StationCreate) SetNillableOrderPriority(v *int) *StationCreate {
+	if v != nil {
+		_c.SetOrderPriority(*v)
+	}
+	return _c
+}
+
 // SetID sets the "id" field.
 func (_c *StationCreate) SetID(v uuid.UUID) *StationCreate {
 	_c.mutation.SetID(v)
@@ -122,6 +136,10 @@ func (_c *StationCreate) defaults() {
 		v := station.DefaultStatus
 		_c.mutation.SetStatus(v)
 	}
+	if _, ok := _c.mutation.OrderPriority(); !ok {
+		v := station.DefaultOrderPriority
+		_c.mutation.SetOrderPriority(v)
+	}
 	if _, ok := _c.mutation.ID(); !ok {
 		v := station.DefaultID()
 		_c.mutation.SetID(v)
@@ -140,6 +158,9 @@ func (_c *StationCreate) check() error {
 		if err := station.StatusValidator(v); err != nil {
 			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "Station.status": %w`, err)}
 		}
+	}
+	if _, ok := _c.mutation.OrderPriority(); !ok {
+		return &ValidationError{Name: "orderPriority", err: errors.New(`ent: missing required field "Station.orderPriority"`)}
 	}
 	return nil
 }
@@ -192,6 +213,10 @@ func (_c *StationCreate) createSpec() (*Station, *sqlgraph.CreateSpec) {
 	if value, ok := _c.mutation.CurrentPlayer(); ok {
 		_spec.SetField(station.FieldCurrentPlayer, field.TypeString, value)
 		_node.CurrentPlayer = &value
+	}
+	if value, ok := _c.mutation.OrderPriority(); ok {
+		_spec.SetField(station.FieldOrderPriority, field.TypeInt, value)
+		_node.OrderPriority = value
 	}
 	return _node, _spec
 }

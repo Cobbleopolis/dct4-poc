@@ -25,23 +25,296 @@ const (
 	OpUpdateOne = ent.OpUpdateOne
 
 	// Node types.
+	TypeProject = "Project"
 	TypeStation = "Station"
 )
 
-// StationMutation represents an operation that mutates the Station nodes in the graph.
-type StationMutation struct {
+// ProjectMutation represents an operation that mutates the Project nodes in the graph.
+type ProjectMutation struct {
 	config
 	op            Op
 	typ           string
 	id            *uuid.UUID
-	name          *string
-	status        *station.Status
-	checkoutTime  *time.Time
-	currentPlayer *string
 	clearedFields map[string]struct{}
 	done          bool
-	oldValue      func(context.Context) (*Station, error)
-	predicates    []predicate.Station
+	oldValue      func(context.Context) (*Project, error)
+	predicates    []predicate.Project
+}
+
+var _ ent.Mutation = (*ProjectMutation)(nil)
+
+// projectOption allows management of the mutation configuration using functional options.
+type projectOption func(*ProjectMutation)
+
+// newProjectMutation creates new mutation for the Project entity.
+func newProjectMutation(c config, op Op, opts ...projectOption) *ProjectMutation {
+	m := &ProjectMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeProject,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withProjectID sets the ID field of the mutation.
+func withProjectID(id uuid.UUID) projectOption {
+	return func(m *ProjectMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *Project
+		)
+		m.oldValue = func(ctx context.Context) (*Project, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().Project.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withProject sets the old Project of the mutation.
+func withProject(node *Project) projectOption {
+	return func(m *ProjectMutation) {
+		m.oldValue = func(context.Context) (*Project, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m ProjectMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m ProjectMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of Project entities.
+func (m *ProjectMutation) SetID(id uuid.UUID) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *ProjectMutation) ID() (id uuid.UUID, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *ProjectMutation) IDs(ctx context.Context) ([]uuid.UUID, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []uuid.UUID{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().Project.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// Where appends a list predicates to the ProjectMutation builder.
+func (m *ProjectMutation) Where(ps ...predicate.Project) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the ProjectMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *ProjectMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.Project, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *ProjectMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *ProjectMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (Project).
+func (m *ProjectMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *ProjectMutation) Fields() []string {
+	fields := make([]string, 0, 0)
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *ProjectMutation) Field(name string) (ent.Value, bool) {
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *ProjectMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	return nil, fmt.Errorf("unknown Project field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *ProjectMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown Project field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *ProjectMutation) AddedFields() []string {
+	return nil
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *ProjectMutation) AddedField(name string) (ent.Value, bool) {
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *ProjectMutation) AddField(name string, value ent.Value) error {
+	return fmt.Errorf("unknown Project numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *ProjectMutation) ClearedFields() []string {
+	return nil
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *ProjectMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *ProjectMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown Project nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *ProjectMutation) ResetField(name string) error {
+	return fmt.Errorf("unknown Project field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *ProjectMutation) AddedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *ProjectMutation) AddedIDs(name string) []ent.Value {
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *ProjectMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *ProjectMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *ProjectMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *ProjectMutation) EdgeCleared(name string) bool {
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *ProjectMutation) ClearEdge(name string) error {
+	return fmt.Errorf("unknown Project unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *ProjectMutation) ResetEdge(name string) error {
+	return fmt.Errorf("unknown Project edge %s", name)
+}
+
+// StationMutation represents an operation that mutates the Station nodes in the graph.
+type StationMutation struct {
+	config
+	op               Op
+	typ              string
+	id               *uuid.UUID
+	name             *string
+	status           *station.Status
+	checkoutTime     *time.Time
+	currentPlayer    *string
+	orderPriority    *int
+	addorderPriority *int
+	clearedFields    map[string]struct{}
+	done             bool
+	oldValue         func(context.Context) (*Station, error)
+	predicates       []predicate.Station
 }
 
 var _ ent.Mutation = (*StationMutation)(nil)
@@ -318,6 +591,62 @@ func (m *StationMutation) ResetCurrentPlayer() {
 	delete(m.clearedFields, station.FieldCurrentPlayer)
 }
 
+// SetOrderPriority sets the "orderPriority" field.
+func (m *StationMutation) SetOrderPriority(i int) {
+	m.orderPriority = &i
+	m.addorderPriority = nil
+}
+
+// OrderPriority returns the value of the "orderPriority" field in the mutation.
+func (m *StationMutation) OrderPriority() (r int, exists bool) {
+	v := m.orderPriority
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldOrderPriority returns the old "orderPriority" field's value of the Station entity.
+// If the Station object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *StationMutation) OldOrderPriority(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldOrderPriority is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldOrderPriority requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldOrderPriority: %w", err)
+	}
+	return oldValue.OrderPriority, nil
+}
+
+// AddOrderPriority adds i to the "orderPriority" field.
+func (m *StationMutation) AddOrderPriority(i int) {
+	if m.addorderPriority != nil {
+		*m.addorderPriority += i
+	} else {
+		m.addorderPriority = &i
+	}
+}
+
+// AddedOrderPriority returns the value that was added to the "orderPriority" field in this mutation.
+func (m *StationMutation) AddedOrderPriority() (r int, exists bool) {
+	v := m.addorderPriority
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetOrderPriority resets all changes to the "orderPriority" field.
+func (m *StationMutation) ResetOrderPriority() {
+	m.orderPriority = nil
+	m.addorderPriority = nil
+}
+
 // Where appends a list predicates to the StationMutation builder.
 func (m *StationMutation) Where(ps ...predicate.Station) {
 	m.predicates = append(m.predicates, ps...)
@@ -352,7 +681,7 @@ func (m *StationMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *StationMutation) Fields() []string {
-	fields := make([]string, 0, 4)
+	fields := make([]string, 0, 5)
 	if m.name != nil {
 		fields = append(fields, station.FieldName)
 	}
@@ -364,6 +693,9 @@ func (m *StationMutation) Fields() []string {
 	}
 	if m.currentPlayer != nil {
 		fields = append(fields, station.FieldCurrentPlayer)
+	}
+	if m.orderPriority != nil {
+		fields = append(fields, station.FieldOrderPriority)
 	}
 	return fields
 }
@@ -381,6 +713,8 @@ func (m *StationMutation) Field(name string) (ent.Value, bool) {
 		return m.CheckoutTime()
 	case station.FieldCurrentPlayer:
 		return m.CurrentPlayer()
+	case station.FieldOrderPriority:
+		return m.OrderPriority()
 	}
 	return nil, false
 }
@@ -398,6 +732,8 @@ func (m *StationMutation) OldField(ctx context.Context, name string) (ent.Value,
 		return m.OldCheckoutTime(ctx)
 	case station.FieldCurrentPlayer:
 		return m.OldCurrentPlayer(ctx)
+	case station.FieldOrderPriority:
+		return m.OldOrderPriority(ctx)
 	}
 	return nil, fmt.Errorf("unknown Station field %s", name)
 }
@@ -435,6 +771,13 @@ func (m *StationMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetCurrentPlayer(v)
 		return nil
+	case station.FieldOrderPriority:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetOrderPriority(v)
+		return nil
 	}
 	return fmt.Errorf("unknown Station field %s", name)
 }
@@ -442,13 +785,21 @@ func (m *StationMutation) SetField(name string, value ent.Value) error {
 // AddedFields returns all numeric fields that were incremented/decremented during
 // this mutation.
 func (m *StationMutation) AddedFields() []string {
-	return nil
+	var fields []string
+	if m.addorderPriority != nil {
+		fields = append(fields, station.FieldOrderPriority)
+	}
+	return fields
 }
 
 // AddedField returns the numeric value that was incremented/decremented on a field
 // with the given name. The second boolean return value indicates that this field
 // was not set, or was not defined in the schema.
 func (m *StationMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case station.FieldOrderPriority:
+		return m.AddedOrderPriority()
+	}
 	return nil, false
 }
 
@@ -457,6 +808,13 @@ func (m *StationMutation) AddedField(name string) (ent.Value, bool) {
 // type.
 func (m *StationMutation) AddField(name string, value ent.Value) error {
 	switch name {
+	case station.FieldOrderPriority:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddOrderPriority(v)
+		return nil
 	}
 	return fmt.Errorf("unknown Station numeric field %s", name)
 }
@@ -510,6 +868,9 @@ func (m *StationMutation) ResetField(name string) error {
 		return nil
 	case station.FieldCurrentPlayer:
 		m.ResetCurrentPlayer()
+		return nil
+	case station.FieldOrderPriority:
+		m.ResetOrderPriority()
 		return nil
 	}
 	return fmt.Errorf("unknown Station field %s", name)

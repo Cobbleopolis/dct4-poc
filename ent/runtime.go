@@ -3,6 +3,7 @@
 package ent
 
 import (
+	"github.com/cobbleopolis/dragoncontimer/ent/project"
 	"github.com/cobbleopolis/dragoncontimer/ent/schema"
 	"github.com/cobbleopolis/dragoncontimer/ent/station"
 	"github.com/google/uuid"
@@ -12,8 +13,18 @@ import (
 // (default values, validators, hooks and policies) and stitches it
 // to their package variables.
 func init() {
+	projectFields := schema.Project{}.Fields()
+	_ = projectFields
+	// projectDescID is the schema descriptor for id field.
+	projectDescID := projectFields[0].Descriptor()
+	// project.DefaultID holds the default value on creation for the id field.
+	project.DefaultID = projectDescID.Default.(func() uuid.UUID)
 	stationFields := schema.Station{}.Fields()
 	_ = stationFields
+	// stationDescOrderPriority is the schema descriptor for orderPriority field.
+	stationDescOrderPriority := stationFields[5].Descriptor()
+	// station.DefaultOrderPriority holds the default value on creation for the orderPriority field.
+	station.DefaultOrderPriority = stationDescOrderPriority.Default.(int)
 	// stationDescID is the schema descriptor for id field.
 	stationDescID := stationFields[0].Descriptor()
 	// station.DefaultID holds the default value on creation for the id field.

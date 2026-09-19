@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
+	"github.com/cobbleopolis/dragoncontimer/ent/project"
 	"github.com/cobbleopolis/dragoncontimer/ent/station"
 )
 
@@ -73,6 +74,7 @@ var (
 func checkColumn(t, c string) error {
 	initCheck.Do(func() {
 		columnCheck = sql.NewColumnCheck(map[string]func(string) bool{
+			project.Table: project.ValidColumn,
 			station.Table: station.ValidColumn,
 		})
 	})

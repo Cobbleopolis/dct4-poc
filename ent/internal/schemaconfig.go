@@ -7,6 +7,7 @@ import "context"
 // SchemaConfig represents alternative schema names for all tables
 // that can be passed at runtime.
 type SchemaConfig struct {
+	Project string // Project table.
 	Station string // Station table.
 }
 

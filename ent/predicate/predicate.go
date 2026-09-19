@@ -6,5 +6,8 @@ import (
 	"entgo.io/ent/dialect/sql"
 )
 
+// Project is the predicate function for project builders.
+type Project func(*sql.Selector)
+
 // Station is the predicate function for station builders.
 type Station func(*sql.Selector)

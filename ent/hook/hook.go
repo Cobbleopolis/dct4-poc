@@ -9,6 +9,18 @@ import (
 	"github.com/cobbleopolis/dragoncontimer/ent"
 )
 
+// The ProjectFunc type is an adapter to allow the use of ordinary
+// function as Project mutator.
+type ProjectFunc func(context.Context, *ent.ProjectMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f ProjectFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.ProjectMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ProjectMutation", m)
+}
+
 // The StationFunc type is an adapter to allow the use of ordinary
 // function as Station mutator.
 type StationFunc func(context.Context, *ent.StationMutation) (ent.Value, error)

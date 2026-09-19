@@ -11,9 +11,10 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/cobbleopolis/dragoncontimer/ent/internal"
 	"github.com/cobbleopolis/dragoncontimer/ent/predicate"
 	"github.com/cobbleopolis/dragoncontimer/ent/station"
+
+	"github.com/cobbleopolis/dragoncontimer/ent/internal"
 )
 
 // StationUpdate is the builder for updating Station entities.
@@ -97,6 +98,27 @@ func (_u *StationUpdate) ClearCurrentPlayer() *StationUpdate {
 	return _u
 }
 
+// SetOrderPriority sets the "orderPriority" field.
+func (_u *StationUpdate) SetOrderPriority(v int) *StationUpdate {
+	_u.mutation.ResetOrderPriority()
+	_u.mutation.SetOrderPriority(v)
+	return _u
+}
+
+// SetNillableOrderPriority sets the "orderPriority" field if the given value is not nil.
+func (_u *StationUpdate) SetNillableOrderPriority(v *int) *StationUpdate {
+	if v != nil {
+		_u.SetOrderPriority(*v)
+	}
+	return _u
+}
+
+// AddOrderPriority adds value to the "orderPriority" field.
+func (_u *StationUpdate) AddOrderPriority(v int) *StationUpdate {
+	_u.mutation.AddOrderPriority(v)
+	return _u
+}
+
 // Mutation returns the StationMutation object of the builder.
 func (_u *StationUpdate) Mutation() *StationMutation {
 	return _u.mutation
@@ -168,6 +190,12 @@ func (_u *StationUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	}
 	if _u.mutation.CurrentPlayerCleared() {
 		_spec.ClearField(station.FieldCurrentPlayer, field.TypeString)
+	}
+	if value, ok := _u.mutation.OrderPriority(); ok {
+		_spec.SetField(station.FieldOrderPriority, field.TypeInt, value)
+	}
+	if value, ok := _u.mutation.AddedOrderPriority(); ok {
+		_spec.AddField(station.FieldOrderPriority, field.TypeInt, value)
 	}
 	_spec.Node.Schema = _u.schemaConfig.Station
 	ctx = internal.NewSchemaConfigContext(ctx, _u.schemaConfig)
@@ -256,6 +284,27 @@ func (_u *StationUpdateOne) SetNillableCurrentPlayer(v *string) *StationUpdateOn
 // ClearCurrentPlayer clears the value of the "currentPlayer" field.
 func (_u *StationUpdateOne) ClearCurrentPlayer() *StationUpdateOne {
 	_u.mutation.ClearCurrentPlayer()
+	return _u
+}
+
+// SetOrderPriority sets the "orderPriority" field.
+func (_u *StationUpdateOne) SetOrderPriority(v int) *StationUpdateOne {
+	_u.mutation.ResetOrderPriority()
+	_u.mutation.SetOrderPriority(v)
+	return _u
+}
+
+// SetNillableOrderPriority sets the "orderPriority" field if the given value is not nil.
+func (_u *StationUpdateOne) SetNillableOrderPriority(v *int) *StationUpdateOne {
+	if v != nil {
+		_u.SetOrderPriority(*v)
+	}
+	return _u
+}
+
+// AddOrderPriority adds value to the "orderPriority" field.
+func (_u *StationUpdateOne) AddOrderPriority(v int) *StationUpdateOne {
+	_u.mutation.AddOrderPriority(v)
 	return _u
 }
 
@@ -360,6 +409,12 @@ func (_u *StationUpdateOne) sqlSave(ctx context.Context) (_node *Station, err er
 	}
 	if _u.mutation.CurrentPlayerCleared() {
 		_spec.ClearField(station.FieldCurrentPlayer, field.TypeString)
+	}
+	if value, ok := _u.mutation.OrderPriority(); ok {
+		_spec.SetField(station.FieldOrderPriority, field.TypeInt, value)
+	}
+	if value, ok := _u.mutation.AddedOrderPriority(); ok {
+		_spec.AddField(station.FieldOrderPriority, field.TypeInt, value)
 	}
 	_spec.Node.Schema = _u.schemaConfig.Station
 	ctx = internal.NewSchemaConfigContext(ctx, _u.schemaConfig)

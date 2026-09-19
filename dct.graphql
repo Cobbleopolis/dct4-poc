@@ -1,0 +1,4 @@
+type Mutation {
+  createStation(input: CreateStationInput!): Station!
+  updateStation(id: ID!, input: UpdateStationInput!): Station!
+}

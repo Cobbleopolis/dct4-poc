@@ -26,6 +26,8 @@ type Station struct {
 	CheckoutTime *time.Time `json:"checkoutTime,omitempty"`
 	// CurrentPlayer holds the value of the "currentPlayer" field.
 	CurrentPlayer *string `json:"currentPlayer,omitempty"`
+	// OrderPriority holds the value of the "orderPriority" field.
+	OrderPriority int `json:"orderPriority,omitempty"`
 	selectValues  sql.SelectValues
 }
 
@@ -34,6 +36,8 @@ func (*Station) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
+		case station.FieldOrderPriority:
+			values[i] = new(sql.NullInt64)
 		case station.FieldName, station.FieldStatus, station.FieldCurrentPlayer:
 			values[i] = new(sql.NullString)
 		case station.FieldCheckoutTime:
@@ -87,6 +91,12 @@ func (_m *Station) assignValues(columns []string, values []any) error {
 				_m.CurrentPlayer = new(string)
 				*_m.CurrentPlayer = value.String
 			}
+		case station.FieldOrderPriority:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field orderPriority", values[i])
+			} else if value.Valid {
+				_m.OrderPriority = int(value.Int64)
+			}
 		default:
 			_m.selectValues.Set(columns[i], values[i])
 		}
@@ -138,6 +148,9 @@ func (_m *Station) String() string {
 		builder.WriteString("currentPlayer=")
 		builder.WriteString(*v)
 	}
+	builder.WriteString(", ")
+	builder.WriteString("orderPriority=")
+	builder.WriteString(fmt.Sprintf("%v", _m.OrderPriority))
 	builder.WriteByte(')')
 	return builder.String()
 }

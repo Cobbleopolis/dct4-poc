@@ -4,6 +4,8 @@ package station
 
 import (
 	"fmt"
+	"io"
+	"strconv"
 
 	"entgo.io/ent/dialect/sql"
 	"github.com/google/uuid"
@@ -22,6 +24,8 @@ const (
 	FieldCheckoutTime = "checkout_time"
 	// FieldCurrentPlayer holds the string denoting the currentplayer field in the database.
 	FieldCurrentPlayer = "current_player"
+	// FieldOrderPriority holds the string denoting the orderpriority field in the database.
+	FieldOrderPriority = "order_priority"
 	// Table holds the table name of the station in the database.
 	Table = "stations"
 )
@@ -33,6 +37,7 @@ var Columns = []string{
 	FieldStatus,
 	FieldCheckoutTime,
 	FieldCurrentPlayer,
+	FieldOrderPriority,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -46,6 +51,8 @@ func ValidColumn(column string) bool {
 }
 
 var (
+	// DefaultOrderPriority holds the default value on creation for the "orderPriority" field.
+	DefaultOrderPriority int
 	// DefaultID holds the default value on creation for the "id" field.
 	DefaultID func() uuid.UUID
 )
@@ -103,4 +110,27 @@ func ByCheckoutTime(opts ...sql.OrderTermOption) OrderOption {
 // ByCurrentPlayer orders the results by the currentPlayer field.
 func ByCurrentPlayer(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldCurrentPlayer, opts...).ToFunc()
+}
+
+// ByOrderPriority orders the results by the orderPriority field.
+func ByOrderPriority(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldOrderPriority, opts...).ToFunc()
+}
+
+// MarshalGQL implements graphql.Marshaler interface.
+func (e Status) MarshalGQL(w io.Writer) {
+	io.WriteString(w, strconv.Quote(e.String()))
+}
+
+// UnmarshalGQL implements graphql.Unmarshaler interface.
+func (e *Status) UnmarshalGQL(val interface{}) error {
+	str, ok := val.(string)
+	if !ok {
+		return fmt.Errorf("enum %T must be a string", val)
+	}
+	*e = Status(str)
+	if err := StatusValidator(*e); err != nil {
+		return fmt.Errorf("%s is not a valid Status", str)
+	}
+	return nil
 }

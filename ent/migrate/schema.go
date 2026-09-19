@@ -8,6 +8,16 @@ import (
 )
 
 var (
+	// ProjectsColumns holds the columns for the "projects" table.
+	ProjectsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUUID},
+	}
+	// ProjectsTable holds the schema information for the "projects" table.
+	ProjectsTable = &schema.Table{
+		Name:       "projects",
+		Columns:    ProjectsColumns,
+		PrimaryKey: []*schema.Column{ProjectsColumns[0]},
+	}
 	// StationsColumns holds the columns for the "stations" table.
 	StationsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUUID, Unique: true},
@@ -15,6 +25,7 @@ var (
 		{Name: "status", Type: field.TypeEnum, Enums: []string{"DEFAULT", "CHECKED_OUT", "NOT_AVAILABLE"}, Default: "DEFAULT"},
 		{Name: "checkout_time", Type: field.TypeTime, Nullable: true},
 		{Name: "current_player", Type: field.TypeString, Nullable: true},
+		{Name: "order_priority", Type: field.TypeInt, Default: 0},
 	}
 	// StationsTable holds the schema information for the "stations" table.
 	StationsTable = &schema.Table{
@@ -24,6 +35,7 @@ var (
 	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
+		ProjectsTable,
 		StationsTable,
 	}
 )
